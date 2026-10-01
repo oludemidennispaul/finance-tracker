@@ -22,24 +22,25 @@ router.get('/', asyncHandler(async (req, res) => {
   // The equally long window immediately before this one, for comparison.
   const prevTo = addDays(from, -1);
   const prevFrom = addDays(from, -rangeDays);
+  const uid = req.user.id;
 
   const [totals, previous, byCategory, trend] = await Promise.all([
     query(
       `SELECT COALESCE(SUM(amount), 0) AS total, COUNT(*)::int AS count
-       FROM expenses WHERE spent_on BETWEEN $1 AND $2`,
-      [from, to],
+       FROM expenses WHERE user_id = $3 AND spent_on BETWEEN $1 AND $2`,
+      [from, to, uid],
     ),
     query(
-      `SELECT COALESCE(SUM(amount), 0) AS total FROM expenses WHERE spent_on BETWEEN $1 AND $2`,
-      [prevFrom, prevTo],
+      `SELECT COALESCE(SUM(amount), 0) AS total FROM expenses WHERE user_id = $3 AND spent_on BETWEEN $1 AND $2`,
+      [prevFrom, prevTo, uid],
     ),
     query(
       `SELECT c.id, c.name, SUM(e.amount) AS total, COUNT(*)::int AS count
        FROM expenses e JOIN categories c ON c.id = e.category_id
-       WHERE e.spent_on BETWEEN $1 AND $2
+       WHERE e.user_id = $3 AND e.spent_on BETWEEN $1 AND $2
        GROUP BY c.id, c.name
        ORDER BY total DESC, c.name`,
-      [from, to],
+      [from, to, uid],
     ),
     // One row per period in the range, including periods with no spending.
     query(
@@ -55,9 +56,10 @@ router.get('/', asyncHandler(async (req, res) => {
        LEFT JOIN expenses e
          ON date_trunc($3, e.spent_on::timestamp)::date = p.period
         AND e.spent_on BETWEEN $1 AND $2
+        AND e.user_id = $4
        GROUP BY p.period
        ORDER BY p.period`,
-      [from, to, granularity],
+      [from, to, granularity, uid],
     ),
   ]);
 

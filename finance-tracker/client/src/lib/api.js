@@ -1,4 +1,9 @@
-// Thin wrapper around fetch for the Express API.
+// Thin wrapper around fetch for the Express API. The session cookie is sent
+// automatically because the app and API share the same origin.
+
+let onUnauthorized = () => {};
+export const setUnauthorizedHandler = (fn) => { onUnauthorized = fn; };
+
 async function request(path, { method = 'GET', body } = {}) {
   const res = await fetch(`/api${path}`, {
     method,
@@ -7,6 +12,8 @@ async function request(path, { method = 'GET', body } = {}) {
   });
   if (res.status === 204) return null;
   const data = await res.json().catch(() => ({}));
+  // A 401 outside the auth endpoints means the session expired: show the login screen.
+  if (res.status === 401 && !path.startsWith('/auth/')) onUnauthorized();
   if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
   return data;
 }
@@ -14,6 +21,12 @@ async function request(path, { method = 'GET', body } = {}) {
 const qs = (params) => new URLSearchParams(params).toString();
 
 export const api = {
+  authConfig: () => request('/auth/config'),
+  me: () => request('/auth/me'),
+  signup: (details) => request('/auth/signup', { method: 'POST', body: details }),
+  login: (email, password) => request('/auth/login', { method: 'POST', body: { email, password } }),
+  logout: () => request('/auth/logout', { method: 'POST' }),
+
   categories: () => request('/categories'),
   addCategory: (name) => request('/categories', { method: 'POST', body: { name } }),
 

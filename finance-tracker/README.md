@@ -1,6 +1,8 @@
 # Finance Tracker
 
-A small personal finance app: log daily expenses, see where the money goes, and get a projection of when you'll reach your savings goals.
+A small personal finance app: log daily expenses, see where the money goes, and get a projection of when you'll reach your savings goals. Each person has their own account and only sees their own data. It can be installed on a phone's home screen.
+
+**To put it online for you and your friends, follow [DEPLOY.md](DEPLOY.md).**
 
 - **Frontend:** React 18 + Vite, Recharts for the trend chart
 - **Backend:** Node.js + Express REST API
@@ -32,7 +34,7 @@ cd server
 cp .env.example .env      # edit DATABASE_URL if your Postgres differs
 npm install
 npm run migrate           # creates tables and default categories
-npm run seed              # optional: ~4 months of sample data
+npm run seed              # optional: demo account with ~4 months of sample data
 npm run dev               # API on http://localhost:4000
 ```
 
@@ -44,7 +46,7 @@ npm install
 npm run dev               # app on http://localhost:5173
 ```
 
-Open http://localhost:5173. Vite forwards `/api` calls to the API on port 4000.
+Open http://localhost:5173 and create an account, or sign in to the demo account (`demo@example.com` / `demo12345`) if you ran the seed. Vite forwards `/api` calls to the API on port 4000.
 
 ### Production-style single server
 
@@ -59,16 +61,21 @@ cd ../server && npm start  # serves the API and the built app on http://localhos
 |---|---|---|---|
 | `server/.env` | `DATABASE_URL` | `postgres://finance:finance@localhost:5432/finance` | Postgres connection |
 | `server/.env` | `PORT` | `4000` | API port |
+| `server/.env` | `SIGNUP_CODE` | empty | If set, people need this invite code to create an account |
 | `client/.env` | `VITE_CURRENCY` | `NGN` | Currency code used to format amounts |
 | `client/.env` | `VITE_LOCALE` | `en-NG` | Number and date formatting |
 
 ### Tests
 
 ```bash
-cd server && npm test     # unit tests for the forecasting logic
+cd server && npm test     # unit tests for forecasting and password hashing
 ```
 
 ## What the app does
+
+**Accounts.** Sign up with an email and password (plus an invite code, if one is set). Sessions last 30 days. Every expense, category, goal and income figure belongs to one account, and the server checks ownership on every request.
+
+**Upgrading from the first version.** If your database already has data from before accounts existed, the first person to sign up takes it over, including the income they had set.
 
 **Expense logging.** Amount, category, date and an optional note. You can add a new category from the dropdown. Expenses can be deleted from the list.
 
@@ -94,13 +101,16 @@ server/
   scripts/migrate.js     applies schema.sql
   scripts/seed.js        sample data (refuses to overwrite unless --force)
   src/index.js           app setup, error handling, serves client/dist in production
+  src/auth.js            sign-up, sign-in, sessions, invite code, rate limiting
   src/db.js              connection pool and type parsing
   src/validate.js        input validation
   src/forecast.js        goal projection maths (pure functions, unit tested)
   src/routes/            categories, expenses, summary, goals + settings
 client/src/
-  App.jsx                page layout and data loading
-  components/            StatTiles, ExpenseForm, TrendChart, CategoryBreakdown, ExpenseList, Goals
+  App.jsx                shows the login screen or the dashboard
+  Dashboard.jsx          page layout and data loading
+  components/            AuthScreen, StatTiles, ExpenseForm, TrendChart, CategoryBreakdown, ExpenseList, Goals
+client/public/           app icons and manifest for "Add to Home Screen"
   lib/                   API client, money/date formatting, period presets
 ```
 
@@ -108,15 +118,24 @@ client/src/
 
 | Table | Columns |
 |---|---|
-| `categories` | `id`, `name` (unique) |
-| `expenses` | `id`, `amount` NUMERIC(12,2) > 0, `category_id` → categories, `description`, `spent_on` DATE |
-| `goals` | `id`, `name`, `target_amount`, `saved_amount`, `target_date` (optional) |
-| `settings` | single row: `monthly_income` |
+| `users` | `id`, `email` (unique, case-insensitive), `name`, `password_hash` (scrypt), `monthly_income` |
+| `sessions` | `token_hash` (SHA-256 of the cookie token), `user_id`, `expires_at` |
+| `categories` | `id`, `user_id`, `name` (unique per user) |
+| `expenses` | `id`, `user_id`, `amount` NUMERIC(12,2) > 0, `category_id` → categories, `description`, `spent_on` DATE |
+| `goals` | `id`, `user_id`, `name`, `target_amount`, `saved_amount`, `target_date` (optional) |
+
+Deleting a user deletes all of their data.
 
 ### API
 
+All endpoints except `/api/auth/*` and `/api/health` need a signed-in session cookie and only return or change the caller's own data.
+
 | Method | Path | Notes |
 |---|---|---|
+| POST | `/api/auth/signup` | `email, password, name?, inviteCode?` |
+| POST | `/api/auth/login` · `/api/auth/logout` | |
+| GET | `/api/auth/me` · `/api/auth/config` | current user · whether an invite code is required |
+| POST | `/api/auth/password` | `currentPassword, newPassword`; signs out other devices |
 | GET / POST | `/api/categories` | |
 | GET | `/api/expenses?from&to&limit` | newest first |
 | POST / PUT / DELETE | `/api/expenses/:id` | body: `amount, categoryId, spentOn, description` |
@@ -136,7 +155,7 @@ client/src/
 
 ## Deliberate limits of this first version
 
-- Single user, no login. Add authentication and a `user_id` column on each table before putting it on the internet.
+- No "forgot password" email. DEPLOY.md explains how to reset a locked-out account.
 - Income is one monthly figure, not a log of income entries.
 - The forecast assumes your recent average spending continues. It does not model one-off big purchases or seasonal patterns.
 - Expenses can be deleted but not edited in the UI (the API already supports `PUT`).
