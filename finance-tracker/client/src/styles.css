@@ -319,3 +319,21 @@ button.link { color: var(--accent); }
 @media (max-width: 560px) {
   .segmented.on-band { display: grid; grid-template-columns: 1fr 1fr; }
 }
+
+/* Blink: the eye stays open, then closes and reopens quickly. Every few
+   cycles it double-blinks, which reads as more alive than a metronome. */
+.logo-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: blink 7s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+@keyframes blink {
+  0%, 44%, 50%, 92%, 96%, 100% { transform: scaleY(1); }
+  46.5% { transform: scaleY(0.08); }
+  93.5%, 98% { transform: scaleY(0.08); }
+  95.5% { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-eye { animation: none; }
+}
