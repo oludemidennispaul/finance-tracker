@@ -28,6 +28,13 @@ app.use((_req, res, next) => {
 });
 app.use(express.json({ limit: '100kb' }));
 
+// Keep-alive target for an uptime pinger. Deliberately does NOT touch the
+// database, so pinging keeps the app awake without keeping Neon's compute
+// running (which would use up its free monthly hours).
+app.get('/api/ping', (_req, res) => {
+  res.set('Cache-Control', 'no-store').type('text/plain').send('ok');
+});
+
 app.get('/api/health', async (_req, res) => {
   try {
     await pool.query('SELECT 1');
