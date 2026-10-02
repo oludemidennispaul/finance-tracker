@@ -65,6 +65,16 @@ It opens full screen with its own icon. You stay signed in for 30 days at a time
 - **Limits are generous for personal use.** Render gives 750 free hours a month, enough for one app running all month. Neon's free plan gives 0.5 GB of storage, which is years of expense entries for a group of friends.
 - **Updating the app:** commit a change to the repo on GitHub and Render rebuilds and redeploys automatically. Your data stays in Neon untouched.
 
+## Keeping it awake (optional, free)
+
+To avoid the one-minute wake-up screen, have a free service visit the app every 10 minutes:
+
+1. Sign up at **cron-job.org** (free).
+2. Create a cron job with URL `https://YOUR-APP.onrender.com/api/ping`, running **every 10 minutes**.
+3. Save it.
+
+`/api/ping` doesn't touch the database, so this keeps the app awake without using up Neon's free compute. One app running all month uses about 744 of Render's 750 free hours, so only keep **one** free Render service awake this way.
+
 ## Keeping it safe
 
 - Choose a `SIGNUP_CODE` that isn't easy to guess, and change it in Render's **Environment** tab if it gets shared too widely. Changing it doesn't affect existing accounts.
