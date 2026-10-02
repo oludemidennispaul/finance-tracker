@@ -7,6 +7,7 @@ import TrendChart from './components/TrendChart.jsx';
 import CategoryBreakdown from './components/CategoryBreakdown.jsx';
 import ExpenseList from './components/ExpenseList.jsx';
 import Goals from './components/Goals.jsx';
+import DailyCompare from './components/DailyCompare.jsx';
 
 export default function Dashboard({ user, onSignOut }) {
   const [periodId, setPeriodId] = useState('30d');
@@ -15,6 +16,7 @@ export default function Dashboard({ user, onSignOut }) {
   const [summary, setSummary] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [forecast, setForecast] = useState(null);
+  const [daily, setDaily] = useState(null);
   const [error, setError] = useState('');
 
   const period = PERIODS.find((p) => p.id === periodId);
@@ -42,14 +44,23 @@ export default function Dashboard({ user, onSignOut }) {
     }
   }, []);
 
+  const loadDaily = useCallback(async () => {
+    try {
+      setDaily(await api.daily(today()));
+    } catch (err) {
+      setError(err.message);
+    }
+  }, []);
+
   useEffect(() => { loadPeriod(); }, [loadPeriod]);
   useEffect(() => {
     loadForecast();
+    loadDaily();
     api.categories().then(setCategories).catch((err) => setError(err.message));
-  }, [loadForecast]);
+  }, [loadForecast, loadDaily]);
 
-  // Spending changes both the period view and the forecast.
-  const refreshAll = () => Promise.all([loadPeriod(), loadForecast()]);
+  // Spending changes the period view, today's comparison and the forecast.
+  const refreshAll = () => Promise.all([loadPeriod(), loadForecast(), loadDaily()]);
 
   const choosePeriod = (id) => {
     setPeriodId(id);
@@ -87,6 +98,8 @@ export default function Dashboard({ user, onSignOut }) {
           <button className="link" onClick={refreshAll}>Retry</button>
         </div>
       )}
+
+      <DailyCompare daily={daily} />
 
       <StatTiles summary={summary} forecast={forecast} />
 

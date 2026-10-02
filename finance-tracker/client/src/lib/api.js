@@ -35,6 +35,7 @@ export const api = {
   deleteExpense: (id) => request(`/expenses/${id}`, { method: 'DELETE' }),
 
   summary: (params) => request(`/summary?${qs(params)}`),
+  daily: (date) => request(`/summary/daily?${qs({ date })}`),
 
   forecast: (today) => request(`/goals?${qs({ today })}`),
   addGoal: (goal) => request('/goals', { method: 'POST', body: goal }),

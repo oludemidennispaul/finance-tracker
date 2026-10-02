@@ -198,3 +198,39 @@ button.block { width: 100%; padding: 11px 16px; }
 
 /* Keep content clear of the notch when opened from the home screen. */
 .page { padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(48px, env(safe-area-inset-bottom)); }
+
+/* Today vs yesterday */
+.daily h2 { margin-bottom: 12px; }
+.daily-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 24px; align-items: start; }
+.daily-totals { display: flex; flex-direction: column; gap: 10px; }
+.daily-figures { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.daily-value { font-size: 1.75rem; font-weight: 650; margin: 2px 0; font-variant-numeric: tabular-nums; }
+.daily-value.secondary { color: var(--text-secondary); }
+.daily-change { font-size: 0.92rem; font-weight: 600; }
+.daily-change.good, .cat-diff.good { color: var(--good); }
+.daily-change.bad, .cat-diff.bad { color: var(--critical); }
+.key { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 2px; }
+.key-today { background: var(--series-1); }
+.key-yesterday { background: var(--yesterday); }
+
+table.compare { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.compare th, .compare td { padding: 7px 0; border-bottom: 1px solid var(--grid); text-align: left; vertical-align: top; }
+.compare thead th { font-size: 0.76rem; font-weight: 500; color: var(--text-muted); padding-top: 0; }
+.compare tbody tr:last-child th, .compare tbody tr:last-child td { border-bottom: 0; }
+.compare tbody th { font-weight: 500; padding-right: 12px; }
+.compare .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 12px; }
+.pair { display: flex; flex-direction: column; gap: 2px; margin-top: 5px; }
+.pair-bar { display: block; height: 5px; border-radius: 3px; min-width: 0; }
+.pair-bar.today { background: var(--series-1); }
+.pair-bar.yesterday { background: var(--yesterday); }
+.cat-diff { display: block; font-size: 0.74rem; font-weight: 600; margin-top: 2px; }
+
+:root { --yesterday: #b5b3ab; }
+@media (prefers-color-scheme: dark) { :root { --yesterday: #5c5b57; } }
+
+@media (max-width: 760px) {
+  .daily-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+}
+@media (max-width: 480px) {
+  .daily-value { font-size: 1.4rem; }
+}

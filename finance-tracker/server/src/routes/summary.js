@@ -77,4 +77,51 @@ router.get('/', asyncHandler(async (req, res) => {
   });
 }));
 
+// GET /api/summary/daily?date=YYYY-MM-DD
+// Compares one day (the user's "today", sent by the browser so it matches
+// their time zone) with the day before, overall and per category.
+router.get('/daily', asyncHandler(async (req, res) => {
+  const today = requireDate(req.query.date, 'date');
+  const yesterday = addDays(today, -1);
+  const avgFrom = addDays(today, -30);
+  const uid = req.user.id;
+
+  const [days, byCategory, avg] = await Promise.all([
+    query(
+      `SELECT spent_on, SUM(amount) AS total, COUNT(*)::int AS count
+       FROM expenses WHERE user_id = $1 AND spent_on IN ($2, $3)
+       GROUP BY spent_on`,
+      [uid, today, yesterday],
+    ),
+    query(
+      `SELECT c.id, c.name,
+              COALESCE(SUM(e.amount) FILTER (WHERE e.spent_on = $2), 0) AS today,
+              COALESCE(SUM(e.amount) FILTER (WHERE e.spent_on = $3), 0) AS yesterday
+       FROM expenses e JOIN categories c ON c.id = e.category_id
+       WHERE e.user_id = $1 AND e.spent_on IN ($2, $3)
+       GROUP BY c.id, c.name
+       ORDER BY GREATEST(SUM(e.amount) FILTER (WHERE e.spent_on = $2), SUM(e.amount) FILTER (WHERE e.spent_on = $3)) DESC NULLS LAST, c.name`,
+      [uid, today, yesterday],
+    ),
+    // Average over the 30 days before today, counting days with no spending as zero.
+    query(
+      `SELECT COALESCE(SUM(amount), 0) / 30.0 AS average
+       FROM expenses WHERE user_id = $1 AND spent_on BETWEEN $2 AND $3`,
+      [uid, avgFrom, yesterday],
+    ),
+  ]);
+
+  const day = (date) => {
+    const row = days.rows.find((r) => r.spent_on === date);
+    return { date, total: row ? row.total : 0, count: row ? row.count : 0 };
+  };
+
+  res.json({
+    today: day(today),
+    yesterday: day(yesterday),
+    byCategory: byCategory.rows,
+    dailyAverage30: Math.round(Number(avg.rows[0].average) * 100) / 100,
+  });
+}));
+
 export default router;
