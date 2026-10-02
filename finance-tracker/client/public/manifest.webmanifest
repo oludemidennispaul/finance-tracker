@@ -1,7 +1,7 @@
 {
   "name": "Mimo Eye",
   "short_name": "Mimo Eye",
-  "description": "Keep an eye on where your money goes: log daily expenses, see the breakdown, and forecast your goals.",
+  "description": "Track your spending: log daily expenses, see the breakdown, and forecast your goals.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

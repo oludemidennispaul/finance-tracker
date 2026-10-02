@@ -38,7 +38,7 @@ export default function AuthScreen({ onSignedIn }) {
       <div className="auth-brand">
         <Logo size={48} />
         <h1 className="wordmark">Mimo Eye</h1>
-        <p>Keep an eye on where your money goes.</p>
+        <p>Track your spending.</p>
       </div>
       <div className="auth-card">
         <h2>{signingUp ? 'Create your account' : 'Sign in'}</h2>
