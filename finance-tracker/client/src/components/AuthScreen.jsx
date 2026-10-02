@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api.js';
+import Logo from './Logo.jsx';
 
 export default function AuthScreen({ onSignedIn }) {
   const [mode, setMode] = useState('login');
@@ -34,10 +35,15 @@ export default function AuthScreen({ onSignedIn }) {
 
   return (
     <main className="auth">
+      <div className="auth-brand">
+        <Logo size={48} />
+        <h1 className="wordmark">Mimo Eye</h1>
+        <p>Keep an eye on where your money goes.</p>
+      </div>
       <div className="auth-card">
-        <h1>Finance Tracker</h1>
+        <h2>{signingUp ? 'Create your account' : 'Sign in'}</h2>
         <p className="muted">
-          {signingUp ? 'Create an account to start tracking your spending.' : 'Sign in to see your spending and goals.'}
+          {signingUp ? 'Your expenses and goals stay private to your account.' : 'Welcome back.'}
         </p>
 
         <form className="form" onSubmit={submit}>

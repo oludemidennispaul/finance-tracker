@@ -234,3 +234,88 @@ table.compare { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
 @media (max-width: 480px) {
   .daily-value { font-size: 1.4rem; }
 }
+
+/* ==========================================================================
+   Mimo Eye brand
+   ========================================================================== */
+
+/* Mimo Eye blue: deep blue band, gold eye, blue data. */
+:root {
+  --page: #edf2fb; --surface: #ffffff;
+  --brand: #143c8c; --brand-deep: #0c2a66; --brand-ink: #ffffff; --brand-muted: #b3c7ef;
+  --highlight: #f5b841; --highlight-ink: #2a1c00;
+  --accent: #1f5fd1; --accent-ink: #ffffff;
+  --series-1: #2a6fdb; --series-1-track: #dfe8fa; --yesterday: #b8c1d3;
+  --grid: #e0e6f2; --axis: #c3cbdc;
+  --text-primary: #0f1b33; --text-secondary: #46526b; --text-muted: #646f86;
+  --border: rgba(20, 60, 140, 0.12); --hover-wash: rgba(20, 60, 140, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #0a1020; --surface: #121b30;
+    --brand: #13306e; --brand-deep: #0b1f4d; --brand-muted: #9fb6e6;
+    --accent: #5b93f0; --accent-ink: #07112a;
+    --series-1: #5b93f0; --series-1-track: #1d2c4c; --yesterday: #4a5670;
+    --grid: #1f2a42; --axis: #2c3954;
+    --text-primary: #eef3fc; --text-secondary: #b8c4dc; --text-muted: #8c99b3;
+    --border: rgba(255, 255, 255, 0.1); --hover-wash: rgba(255, 255, 255, 0.05);
+  }
+}
+
+:root { --display: 'Bricolage Grotesque Variable', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+
+h1, h2, .tile-value, .daily-value, .goal h3 { font-family: var(--display); letter-spacing: -0.01em; }
+h2 { font-weight: 650; font-size: 1.05rem; }
+.tile-value, .daily-value { font-weight: 700; }
+
+/* Logo */
+.logo-tile { fill: var(--brand-deep); }
+.logo-white { fill: #ffffff; }
+.logo-iris { fill: var(--highlight); }
+.logo-pupil { fill: var(--brand-deep); }
+.logo { flex-shrink: 0; display: block; }
+
+/* Brand band: holds the header and runs behind the top of the first card. */
+.band { background: var(--brand); color: var(--brand-ink); padding: max(18px, env(safe-area-inset-top)) 16px 84px; }
+.band-inner { max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.band .brand { flex-direction: row; align-items: center; gap: 12px; }
+.wordmark { font-family: var(--display); font-weight: 800; font-size: 1.55rem; line-height: 1; letter-spacing: -0.02em; color: inherit; }
+.band .account { font-size: 0.82rem; color: var(--brand-muted); margin-top: 4px; gap: 6px; }
+.band .account .link { color: var(--brand-ink); font-size: 0.82rem; padding: 0; }
+
+.page { padding-top: 0; margin-top: -64px; }
+
+.segmented.on-band { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.16); }
+.segmented.on-band button { color: var(--brand-ink); opacity: 0.85; }
+.segmented.on-band button:hover { background: rgba(255, 255, 255, 0.12); opacity: 1; }
+.segmented.on-band button.active { background: var(--highlight); color: var(--highlight-ink); opacity: 1; }
+.segmented button.active { background: var(--brand); color: var(--brand-ink); }
+
+/* The first card sits on the band and is the one place colour gets loud. */
+.card.daily { box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.35); border-color: transparent; }
+.key-today, .pair-bar.today { background: var(--series-1); }
+
+.tile { border-top: 3px solid var(--series-1-track); }
+.daily-change.good, .cat-diff.good, .delta.good { color: var(--good); }
+
+button.primary { background: var(--accent); color: var(--accent-ink); }
+input:focus, select:focus, .input-prefix:focus-within { outline-color: var(--accent); }
+button.link { color: var(--accent); }
+
+/* Sign-in screen */
+.auth { flex-direction: column; gap: 22px; background: linear-gradient(var(--brand) 0 46%, var(--page) 46%); }
+.auth-brand { display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--brand-ink); text-align: center; }
+.auth-brand .wordmark { font-size: 2.2rem; }
+.auth-brand p { color: var(--brand-muted); font-size: 0.95rem; }
+.auth-card { box-shadow: 0 16px 40px -24px rgba(0, 0, 0, 0.45); border-color: transparent; }
+.auth-card h2 { margin: 0; font-size: 1.25rem; }
+
+@media (max-width: 560px) {
+  .band { padding-bottom: 80px; }
+  .wordmark { font-size: 1.35rem; }
+  .segmented.on-band { width: 100%; }
+}
+@media (max-width: 560px) {
+  .segmented.on-band { display: grid; grid-template-columns: 1fr 1fr; }
+}

@@ -1,4 +1,4 @@
-# Finance Tracker
+# Mimo Eye
 
 A small personal finance app: log daily expenses, see where the money goes, and get a projection of when you'll reach your savings goals. Each person has their own account and only sees their own data. It can be installed on a phone's home screen.
 

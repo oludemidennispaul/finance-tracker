@@ -1,15 +1,28 @@
 {
-  "name": "Finance Tracker",
-  "short_name": "Finance",
-  "description": "Log daily expenses, see where your money goes, and forecast your savings goals.",
+  "name": "Mimo Eye",
+  "short_name": "Mimo Eye",
+  "description": "Keep an eye on where your money goes: log daily expenses, see the breakdown, and forecast your goals.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f9f9f7",
-  "theme_color": "#f9f9f7",
+  "background_color": "#143c8c",
+  "theme_color": "#143c8c",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

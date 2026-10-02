@@ -8,6 +8,7 @@ import CategoryBreakdown from './components/CategoryBreakdown.jsx';
 import ExpenseList from './components/ExpenseList.jsx';
 import Goals from './components/Goals.jsx';
 import DailyCompare from './components/DailyCompare.jsx';
+import Logo from './components/Logo.jsx';
 
 export default function Dashboard({ user, onSignOut }) {
   const [periodId, setPeriodId] = useState('30d');
@@ -68,30 +69,36 @@ export default function Dashboard({ user, onSignOut }) {
   };
 
   return (
-    <div className="page">
-      <header className="topbar">
-        <div className="brand">
-          <h1>Finance Tracker</h1>
-          <div className="account">
-            <span className="muted small">{user.name || user.email}</span>
-            <button className="link small" onClick={onSignOut}>Sign out</button>
+    <>
+      <header className="band">
+        <div className="band-inner">
+          <div className="brand">
+            <Logo size={36} />
+            <div>
+              <h1 className="wordmark">Mimo Eye</h1>
+              <div className="account">
+                <span>{user.name || user.email}</span>
+                <button className="link" onClick={onSignOut}>Sign out</button>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="segmented" role="tablist" aria-label="Time period">
-          {PERIODS.map((p) => (
-            <button
-              key={p.id}
-              role="tab"
-              aria-selected={p.id === periodId}
-              className={p.id === periodId ? 'active' : ''}
-              onClick={() => choosePeriod(p.id)}
-            >
-              {p.label}
-            </button>
-          ))}
+          <div className="segmented on-band" role="tablist" aria-label="Time period">
+            {PERIODS.map((p) => (
+              <button
+                key={p.id}
+                role="tab"
+                aria-selected={p.id === periodId}
+                className={p.id === periodId ? 'active' : ''}
+                onClick={() => choosePeriod(p.id)}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
+      <div className="page">
       {error && (
         <div className="banner" role="alert">
           <strong>Couldn&rsquo;t reach the server.</strong> {error}
@@ -118,6 +125,7 @@ export default function Dashboard({ user, onSignOut }) {
       </div>
 
       <Goals forecast={forecast} onChanged={loadForecast} />
-    </div>
+      </div>
+    </>
   );
 }

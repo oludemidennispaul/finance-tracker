@@ -1,4 +1,4 @@
-# Putting Finance Tracker online
+# Putting Mimo Eye online
 
 This guide gets the app onto a permanent web address that you and your friends can open from any phone or computer, and install like an app. It uses two free services:
 
